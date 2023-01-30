@@ -1,37 +1,13 @@
-class GameBoard {
-    constructor(){
-        this.board = [
-            [0,0,0,0,0,0,0,0],
-            [0,0,0,0,0,0,0,0],
-            [0,0,0,0,0,0,0,0],
-            [0,0,0,0,0,0,0,0],
-            [0,0,0,0,0,0,0,0],
-            [0,0,0,0,0,0,0,0],
-            [0,0,0,0,0,0,0,0],
-            [0,0,0,0,0,0,0,0],
-        ]
-    }
-
-    getBoard(){
-        return this.board
-    }
-
-    setBoard(newBoard){
-        this.board = newBoard;
-    }
-
-}
-
 // [row][column]
 
 class Knight {
     constructor(){
         this.mark = 'K';
-        this.moves = [[-1,-2],[1,-2],[-2,-1],[-2,1],[-1,2],[1,2],[2,-1],[2,1]]
+        this.xMoves = [-1 , 1 ,-2 ,-2 , -1 ,1 , 2 ,2];
+        this.yMoves = [-2 ,-2 ,-1 , 1 ,  2 ,2 ,-1 ,1]
     }
 }
 
-let chess = new GameBoard();
 let k = new Knight();
 
 /* Write a function that receives two parameters:
@@ -65,8 +41,45 @@ function knightMoves(origin, target){
         return false;
     }
 
+    // Check if new move was visited before
+    function checkIfVisited(visited,target){
+        for(let i = 0; i < visited.length;i++){
+            if(visited[i][0]=== target[0] && visited[i][1] === target[1]){
+                return true
+            }
+        }
+        return false
+    }
+
+    let queue = [];
+    queue.push(origin);
+    
+    let visited = [];
+
+    while(queue.length > 0){
+
+        if(queue[0][0] === target[0] && queue[0][1] === target[1]){
+            visited.push(target);
+            return visited;
+        }
+
+        let dx = queue[0][0];
+        let dy = queue[0][1];
+
+        //Remove the top coord
+        visited.push(queue.shift())
+
+        //This loop checks what moves are possible
+        for (let i = 0; i < 8; i++){
+            let tx = dx + k.xMoves[i];
+            let ty = dy + k.yMoves[i];
+
+            if(isValid(tx, ty) && !(checkIfVisited(visited,[tx,ty]))){
+                queue.push([tx,ty]);
+            }
+        }
+    }
+
 }
 
  console.log(knightMoves([0,0],[2,4]));
-
-
