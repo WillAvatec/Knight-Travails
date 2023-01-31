@@ -23,16 +23,6 @@ let k = new Knight();
     knightMoves([0,0],[2,4]) => [0,0] - [1,2] - [2,4] 
 */
 
-/*
-    We will start with the initial position of knight and will push it in a queue.
-    We will then iterate until our queue is empty.
-    At each iteration we will pop out the front element of the queue and will then generate all the possible moves from this position.
-    If the generated move is valid and we have not traversed it previously, then we will insert it into our queue. 
-    Also if the current position is the desired destination then we will just return the desired value. 
-    If we have iterated all the possible positions and still not reached the final position then we will return -1.
-
-*/
-
 function knightMoves(origin, target){
 
     // Check if move is valid
@@ -48,7 +38,22 @@ function knightMoves(origin, target){
                 return true
             }
         }
+        if(target[0] === origin[0] && target[1] === origin[1]){
+            return true
+        }
         return false
+    }
+
+    // Returns path when tx and ty are the same as target
+    function getPath(array){
+        if(array[0]===origin[0] && array[1]===origin[1]) return [origin]
+        let path = "";
+        let finded = visited.find((el)=>{
+            return el[0] === array[0] && el[1] === array[1]
+        })
+        path = [finded[0],finded[1]]
+
+        return [...getPath(finded[2]),path]
     }
 
     let queue = [];
@@ -58,28 +63,25 @@ function knightMoves(origin, target){
 
     while(queue.length > 0){
 
-        if(queue[0][0] === target[0] && queue[0][1] === target[1]){
-            visited.push(target);
-            return visited;
-        }
-
-        let dx = queue[0][0];
-        let dy = queue[0][1];
+        let [dx,dy] = queue[0];
 
         //Remove the top coord
-        visited.push(queue.shift())
-
+        queue.shift();
         //This loop checks what moves are possible
         for (let i = 0; i < 8; i++){
             let tx = dx + k.xMoves[i];
             let ty = dy + k.yMoves[i];
-
+            
             if(isValid(tx, ty) && !(checkIfVisited(visited,[tx,ty]))){
                 queue.push([tx,ty]);
+                visited.push([tx,ty,[dx,dy]]);
+            }
+            if(tx === target[0] && ty === target[1]){
+                return getPath([tx,ty]);
             }
         }
     }
 
 }
 
- console.log(knightMoves([0,0],[2,4]));
+ console.log(knightMoves([3,3],[4,3]));
